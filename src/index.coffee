@@ -1,5 +1,6 @@
 fs = require 'fs'
 moment = require 'moment'
+time = require 'time'
 lazy = require 'lazy'
 
 module.exports.decorateAlarm = require './alarm'
@@ -127,8 +128,7 @@ module.exports.VEvent = class VEvent extends VComponent
 formatUTCOffset = (startDate, timezone) ->
     if timezone? and startDate?
 
-        if !startDate.setTimezone
-            startDate = moment(startDate)
+        time.extend startDate
 
         startDate.setTimezone timezone
         diff = startDate.getTimezoneOffset()/6
