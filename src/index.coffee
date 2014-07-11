@@ -126,6 +126,10 @@ module.exports.VEvent = class VEvent extends VComponent
 
 formatUTCOffset = (startDate, timezone) ->
     if timezone? and startDate?
+
+        if !startDate.setTimezone
+            startDate = moment(startDate)
+
         startDate.setTimezone timezone
         diff = startDate.getTimezoneOffset()/6
         if diff is 0
