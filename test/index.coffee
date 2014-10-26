@@ -2,6 +2,7 @@ main = require '../lib/index'
 {ICalParser, VCalendar, VAlarm, VTodo, VEvent} = main
 {decorateAlarm, decorateEvent} = main
 should = require 'should'
+time = require 'time'
 
 helpers = null
 describe "Calendar export/import", ->
@@ -53,6 +54,48 @@ describe "Calendar export/import", ->
                     DTEND;VALUE=DATE-TIME:20130610T150000Z
                     END:VEVENT""".replace(/\n/g, '\r\n')
 
+            it 'should support whole day event', ->
+                startDate = new Date 2013, 5, 9, 15, 0, 0
+                endDate = new Date 2013, 5, 10, 15, 0, 0
+                vevent = new VEvent startDate, endDate, "desc", "loc", "3615", null, true
+                vevent.toString().should.equal """
+                    BEGIN:VEVENT
+                    SUMMARY:desc
+                    LOCATION:loc
+                    UID:3615
+                    DTSTART;VALUE=DATE:20130609
+                    DTEND;VALUE=DATE:20130610
+                    END:VEVENT""".replace(/\n/g, '\r\n')
+
+            it 'should support timezones', ->
+                startDate = new time.Date 2013, 5, 9, 15, 0, 0
+                endDate = new time.Date 2013, 5, 10, 15, 0, 0
+                startDate.setTimezone 'Europe/Moscow'
+                endDate.setTimezone 'Europe/Moscow'
+                vevent = new VEvent startDate, endDate, "desc", "loc", "3615"
+                vevent.toString().should.equal """
+                    BEGIN:VEVENT
+                    SUMMARY:desc
+                    LOCATION:loc
+                    UID:3615
+                    DTSTART;VALUE=DATE-TIME;TZID=Europe/Moscow:20130609T150000
+                    DTEND;VALUE=DATE-TIME;TZID=Europe/Moscow:20130610T150000
+                    END:VEVENT""".replace(/\n/g, '\r\n')
+
+            it 'should support whole day events with timezones', ->
+                startDate = new time.Date 2013, 5, 9, 15, 0, 0
+                endDate = new time.Date 2013, 5, 10, 15, 0, 0
+                startDate.setTimezone 'Europe/Moscow'
+                endDate.setTimezone 'Europe/Moscow'
+                vevent = new VEvent startDate, endDate, "desc", "loc", "3615", null, true
+                vevent.toString().should.equal """
+                    BEGIN:VEVENT
+                    SUMMARY:desc
+                    LOCATION:loc
+                    UID:3615
+                    DTSTART;VALUE=DATE:20130609
+                    DTEND;VALUE=DATE:20130610
+                    END:VEVENT""".replace(/\n/g, '\r\n')
 
 
         describe 'get vCalendar with alarms', ->

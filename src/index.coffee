@@ -72,8 +72,8 @@ module.exports.VComponent = class VComponent
         buf.addLine component.toString() for component in @subComponents
         buf.addString "END:#{@name}"
 
-    formatIcalDate: (date, wholeDay) ->
-        if wholeDay
+    formatIcalDate: (date, dateOnly) ->
+        if dateOnly
           moment(date).format('YYYYMMDD')
         else
           moment(date).format('YYYYMMDDTHHmm00')
@@ -141,13 +141,21 @@ module.exports.VEvent = class VEvent extends VComponent
 
         @fields.DESCRIPTION = description if description?
 
-        if wholeDay
-           @fields["DTSTART;VALUE=DATE"] = @formatIcalDate startDate, wholeDay
-           @fields["DTEND;VALUE=DATE"] = @formatIcalDate endDate, wholeDay
-        else
-           @fields["DTSTART;VALUE=DATE-TIME"] = "#{@formatIcalDate startDate}Z"
-           @fields["DTEND;VALUE=DATE-TIME"] = "#{@formatIcalDate endDate}Z"
+        @_setDateField "DTSTART", wholeDay, startDate
+        @_setDateField "DTEND", wholeDay, endDate
 
+    _setDateField: (name, dateOnly, value) ->
+        name = name.toUpperCase()
+        tz = value && value.getTimezone?()
+
+        value = @formatIcalDate value, dateOnly
+        if !dateOnly and !tz
+            value = value + 'Z'
+
+        valType = ';VALUE=' + (dateOnly && 'DATE' || 'DATE-TIME')
+        tzId = (tz && !dateOnly) && ';TZID=' + tz || ''
+
+        @fields[name + valType + tzId] = value
 
 module.exports.VTimezone = class VTimezone extends VComponent
     name: 'VTIMEZONE'
