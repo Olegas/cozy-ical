@@ -1,7 +1,7 @@
 {
-  "name": "cozy-ical",
-  "version": "0.2.8",
-  "description": "Cozy-Ical provides ICal Parser, generators and helpers",
+  "name": "cozy-ical-tensor",
+  "version": "0.2.9",
+  "description": "This is a Tensor's own fork of Cozy-ICal library. Cozy-Ical provides ICal Parser, generators and helpers.",
   "main": "lib/index",
   "scripts": {
     "test": "mocha test/index.coffee --reporter spec --compilers coffee:coffee-script --colors",
