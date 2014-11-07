@@ -67,6 +67,19 @@ describe "Calendar export/import", ->
                     DTEND;VALUE=DATE-TIME:20130610T150000Z
                     END:VEVENT""".replace(/\n/g, '\r\n')
 
+            it 'should support strings with commas, semicolons and colons', ->
+                startDate = new Date 2013, 5, 9, 15, 0, 0
+                endDate = new Date 2013, 5, 10, 15, 0, 0
+                vevent = new VEvent startDate, endDate, "desc, desc: desc; desc", "loc", "3615"
+                vevent.toString().should.equal """
+                    BEGIN:VEVENT
+                    SUMMARY:desc\\, desc: desc\\; desc
+                    LOCATION:loc
+                    UID:3615
+                    DTSTART;VALUE=DATE-TIME:20130609T150000Z
+                    DTEND;VALUE=DATE-TIME:20130610T150000Z
+                    END:VEVENT""".replace(/\n/g, '\r\n')
+
             it 'should support whole day event', ->
                 startDate = new Date 2013, 5, 9, 15, 0, 0
                 endDate = new Date 2013, 5, 10, 15, 0, 0

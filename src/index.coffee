@@ -69,7 +69,7 @@ module.exports.VComponent = class VComponent
         buf = new iCalBuffer
         buf.addLine "BEGIN:#{@name}"
         for att, val of @fields
-            val = val.replace(/\n/g, '\\n')
+            val = val.replace(/\n/g, '\\n').replace(/(,|;)/g, '\\$1')
             buf.addLine "#{att}:#{val}"
         buf.addLine component.toString() for component in @subComponents
         buf.addString "END:#{@name}"
