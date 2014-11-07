@@ -282,7 +282,7 @@ module.exports.ICalParser = class ICalParser
             else
                 key = tuple[0]
                 tuple.shift()
-                value = tuple.join('')
+                value = tuple.join(':')
 
                 if key is "BEGIN"
                     createComponent value
@@ -292,10 +292,10 @@ module.exports.ICalParser = class ICalParser
                     sendError "Malformed ical file"
                 else if key? and key isnt '' and component?
                     [key, details...] = key.split(';')
-                    component.fields[key] = value.replace(/\\n/g, '\n')
+                    component.fields[key] = value.replace(/\\n/g, '\n').replace(/(\\(,|;))/g, '$2')
                     for detail in details
                         [pname, pvalue] = detail.split '='
-                        pvalue = pvalue.replace(/\\n/g, '\n')
+                        pvalue = pvalue.replace(/\\n/g, '\n').replace(/(\\(,|;))/g, '$2')
                         component.fields["#{key}-#{pname}"] = pvalue
                 else
                     sendError "Malformed ical file"

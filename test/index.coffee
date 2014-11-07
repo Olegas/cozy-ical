@@ -201,7 +201,7 @@ describe "Calendar export/import", ->
                     #result.toString().should.equal expectedContent
                     done()
 
-            it 'should correctly parse , ; :', (done) ->
+            it 'should correctly parse comma, semicolon and colon', (done) ->
                 Event = class Event
                 decorateEvent Event
                 parser = new ICalParser
