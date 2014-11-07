@@ -69,7 +69,7 @@ module.exports.VComponent = class VComponent
         buf = new iCalBuffer
         buf.addLine "BEGIN:#{@name}"
         for att, val of @fields
-            val = val.replace(/\n/g, '\\n').replace(/(,|;)/g, '\\$1')
+            val = ('' + val).replace(/\n/g, '\\n').replace(/(,|;)/g, '\\$1')
             buf.addLine "#{att}:#{val}"
         buf.addLine component.toString() for component in @subComponents
         buf.addString "END:#{@name}"
@@ -292,10 +292,10 @@ module.exports.ICalParser = class ICalParser
                     sendError "Malformed ical file"
                 else if key? and key isnt '' and component?
                     [key, details...] = key.split(';')
-                    component.fields[key] = value.replace(/\\n/g, '\n').replace(/(\\(,|;))/g, '$2')
+                    component.fields[key] = ('' + value).replace(/\\n/g, '\n').replace(/(\\(,|;))/g, '$2')
                     for detail in details
                         [pname, pvalue] = detail.split '='
-                        pvalue = pvalue.replace(/\\n/g, '\n').replace(/(\\(,|;))/g, '$2')
+                        pvalue = ('' + pvalue).replace(/\\n/g, '\n').replace(/(\\(,|;))/g, '$2')
                         component.fields["#{key}-#{pname}"] = pvalue
                 else
                     sendError "Malformed ical file"
