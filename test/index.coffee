@@ -54,6 +54,19 @@ describe "Calendar export/import", ->
                     DTEND;VALUE=DATE-TIME:20130610T150000Z
                     END:VEVENT""".replace(/\n/g, '\r\n')
 
+            it 'should support miltiline strings', ->
+                startDate = new Date 2013, 5, 9, 15, 0, 0
+                endDate = new Date 2013, 5, 10, 15, 0, 0
+                vevent = new VEvent startDate, endDate, "desc\nin\nmulti\nlines", "loc", "3615"
+                vevent.toString().should.equal """
+                    BEGIN:VEVENT
+                    SUMMARY:desc\\nin\\nmulti\\nlines
+                    LOCATION:loc
+                    UID:3615
+                    DTSTART;VALUE=DATE-TIME:20130609T150000Z
+                    DTEND;VALUE=DATE-TIME:20130610T150000Z
+                    END:VEVENT""".replace(/\n/g, '\r\n')
+
             it 'should support whole day event', ->
                 startDate = new Date 2013, 5, 9, 15, 0, 0
                 endDate = new Date 2013, 5, 10, 15, 0, 0
@@ -173,6 +186,28 @@ describe "Calendar export/import", ->
                 , (err, result) ->
                     should.not.exist err
                     #result.toString().should.equal expectedContent
+                    done()
+
+            it 'should correctly parse , ; :', (done) ->
+                Event = class Event
+                decorateEvent Event
+                parser = new ICalParser
+                parser.parseFile 'test/punctuations.ics', (err, comp) =>
+                    should.not.exist err
+                    events = Event.extractEvents(comp)
+                    e = events[0];
+                    e.description.should.equal ' some text, and other; some more: and here'
+                    done()
+
+            it 'should correctly parse multiline strings', (done) ->
+                Event = class Event
+                decorateEvent Event
+                parser = new ICalParser
+                parser.parseFile 'test/multiline.ics', (err, comp) =>
+                    should.not.exist err
+                    events = Event.extractEvents(comp)
+                    e = events[0];
+                    e.description.should.equal 'text\nin\nmultiple\nlines'
                     done()
 
         describe 'decorators', ->
